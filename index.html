@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RDEU 与 VaR 约束在 A 股 ETF 上的应用验证。通过历史滚动回测、风险校准和资金试算，观察模型的表现与边界。">
+  <title>RDEU VaR 投资风险实验室</title><link rel="stylesheet" href="styles.css?v=1257d0b2afeb">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><span class="brand-mark">R<span>∕</span>V</span><span>投资风险实验室<small>RDEU · VaR RESEARCH</small></span></a>
+    <p class="nav-label">应用验证</p>
+    <nav aria-label="主导航"><a class="active" href="#overview">01 <span>实验总览</span></a><a href="#backtest">02 <span>第一轮滚动回测</span></a><a href="#enhancement">03 <span>校准与机制对照</span></a><a href="#allocation">04 <span>风险预算与配置</span></a><a href="#sensitivity">05 <span>参数与交易成本</span></a><a href="#evidence">06 <span>模型与证据</span></a></nav>
+    <div class="side-note"><span class="status-dot"></span> 真实行情 · 冻结快照<p>为大创结项提供可复核的应用证据</p><span class="asof-small">正在载入数据</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>大学生创新创业训练计划<span class="desktop-only"> / 应用验证平台</span></span><a href="#evidence">研究方法 ↗</a></header>
+    <section id="overview" class="hero">
+      <div class="hero-content">
+      <div class="eyebrow">PORTFOLIO RISK RESEARCH <span>应用验证增强版 03</span></div>
+      <h1>让风险约束<br>接受真实市场的检验<span>。</span></h1>
+      <p class="hero-copy">在第一版 PE / VC 情景实验的基础上，将 RDEU 与 VaR 配置框架迁移至 A 股 ETF，观察收益、回撤与尾部风险之间的实际取舍。</p>
+      <div class="hero-foot"><a class="button" href="#backtest">查看样本外结果 <span>↓</span></a><p><span class="status-dot"></span><span id="asof">正在载入行情快照</span><small>历史验证结果，不代表未来表现</small></p></div>
+      </div>
+      <aside class="hero-card" aria-label="应用验证研究对象">
+        <span class="hero-card-label">A-SHARE ETF · 研究对象</span>
+        <h2><strong>3</strong> 只指数 ETF</h2>
+        <ul class="hero-assets"><li>沪深 300<span>510300</span></li><li>中证 500<span>510500</span></li><li>创业板<span>159915</span></li></ul>
+        <p class="hero-card-note">历史回测 · 风险校准 · 资金折合</p>
+      </aside>
+    </section>
+    <div id="error" role="alert" hidden></div>
+    <div id="loaded" hidden>
+      <section class="finding"><span class="section-kicker">第一轮实验发现</span><h2 id="main-finding">正在读取结果</h2><p id="finding-detail"></p></section>
+      <section id="backtest" class="section">
+        <div class="section-heading"><div><span class="section-kicker">01 / MARKET VALIDATION</span><h2>第一轮滚动回测</h2></div><span class="subtle" id="test-dates"></span></div>
+        <div class="controls"><div class="field"><label for="strategy">观察策略</label><select id="strategy"></select></div><div class="field"><label for="period">观察区间</label><select id="period"><option value="all">完整样本外</option><option value="recent">2025 年以来</option><option value="year">最近 252 个交易日</option></select></div><div class="field capital"><label for="capital">模拟起始资金 元</label><input id="capital" type="number" min="1000" max="1000000000" step="10000" value="100000"></div></div>
+        <div class="stats" id="stats"></div>
+        <div class="chart-header"><div><h3>投资组合净值</h3><p>区间起点重新归一为 1，所有策略使用相同交易日期</p></div><div id="legend" class="legend"></div></div>
+        <div class="chart-wrap"><svg id="nav-chart" role="img" aria-label="各策略样本外净值对比" viewBox="0 0 980 310"></svg><div id="tooltip" class="tooltip" hidden></div></div>
+        <div class="chart-footer"><span>移动指针可查看每日净值</span><span id="capital-outcome"></span></div>
+        <div class="table-wrap"><table><caption>完整样本外策略比较</caption><thead><tr><th scope="col">策略</th><th scope="col">累计收益</th><th scope="col">年化收益</th><th scope="col">年化波动</th><th scope="col">最大回撤</th><th scope="col">日 ES 95%</th></tr></thead><tbody id="metrics-table"></tbody></table></div>
+        <p class="data-note" id="backtest-note"></p>
+      </section>
+      <section id="enhancement" class="section">
+        <div class="section-heading"><div><span class="section-kicker">02 / CALIBRATION & CONTROLS</span><h2>校准与机制对照</h2></div><span class="subtle">同一行情、费用与执行规则</span></div>
+        <p class="section-intro">保留第一轮结果，加入匹配执行时序的历史模拟（HS）、EWMA 波动过滤历史模拟（FHS）、普通期望效用（EU）和同预算等权对照，逐项判断风险预测与偏好设定的作用。</p>
+        <div class="protocol-note"><strong>评价区间先锁定，结果如实保留</strong><p>2022—2023 年用于历史诊断；2024—2026-10-09 年作为回顾性时间留出段。上一轮已经看过完整行情，这不是从未接触过的数据，也不构成前瞻验证。FHS 固定 λ = 0.94，仅改变风险场景，效用目标仍使用相同历史收益。</p></div>
+        <div class="controls"><div class="field"><label for="enhancement-period">对照评价区间</label><select id="enhancement-period"></select></div></div>
+        <div id="enhancement-finding" class="enhancement-finding"></div>
+        <div class="chart-header"><div><h3>对照策略区间净值</h3><p>在区间开始前一个交易日归一为 1，包含成本</p></div><div id="enhancement-legend" class="legend"></div></div>
+        <div class="chart-wrap"><svg id="enhancement-chart" role="img" aria-label="校准及机制对照策略区间净值" viewBox="0 0 980 310"></svg></div>
+        <div class="table-wrap" id="enhancement-table"></div>
+        <details class="details"><summary>风险覆盖与突破聚集检验 <span>＋</span></summary><div class="table-wrap" id="coverage-table"></div><p class="data-note">仅使用非退化风险日检验覆盖；独立性只计相邻交易日均活跃的转移，不跨现金空档拼接。p 值低于 0.05 提示拒绝相应假设，较高 p 值不证明模型有效。稀疏或不可识别的结果显示“—”，稀疏样本下不报告渐近 p 值。</p></details>
+        <p class="data-note">风险约束检查旧仓隔夜敞口与新仓日内敞口。旧仓风险可能令所有新目标均不满足预算，此时记录不可行并选择估计损失最小的目标；风险预算不保证逐日实际亏损上限。近期切片与留出段重叠，不能重复算作独立证据。</p>
+      </section>
+      <section id="allocation" class="section">
+        <div class="section-heading"><div><span class="section-kicker">03 / RISK BUDGET</span><h2>风险预算与配置</h2></div><span id="allocation-date" class="subtle"></span></div>
+        <div class="allocation-layout"><div><h3>最近收盘持仓</h3><p class="subtle">展示最近交易日收盘后的漂移持仓，用于解释模型的实际风险敞口。</p><div class="budget-input"><label for="budget-capital">输入模拟资金 元</label><input id="budget-capital" type="number" min="1000" max="1000000000" step="10000" value="100000"><p id="budget-amount"></p></div><div id="weights"></div><p class="data-note">金额按历史收盘持仓权重折合，未取整为可交易份额。该配置来自回测，连续权重与复权价格用于研究，下方另提供从现金开始的整手预算试算。</p></div><div class="risk-copy"><span class="section-kicker">如何理解风险预算</span><h3>VaR 限制分位数损失，<br>极端亏损仍可能超出预算</h3><p id="risk-definition"></p><p>ES 描述尾部损失的平均严重程度，最大回撤反映连续持有期间从高点回落的幅度。它们与 VaR 回答不同的问题，应结合观察。</p><div id="risk-audit"></div></div></div>
+        <div class="lot-panel" id="lot-panel">
+          <div class="section-heading"><div><span class="section-kicker">FROM WEIGHT TO UNITS</span><h3>ETF 整手买入预算试算</h3></div><span class="subtle" id="quote-date"></span></div>
+          <p class="subtle">按上方第一轮历史收盘持仓比例，从现金开始买入；采用未复权历史收盘价和每手 100 份。</p>
+          <div class="controls"><div class="field"><label for="lot-capital">可用资金 元</label><input id="lot-capital" type="number" min="0" max="1000000000" step="1000" value="100000"></div><div class="field"><label for="lot-fee">单边综合费用 bps</label><input id="lot-fee" type="number" min="0" max="100" step="1" value="10"></div><div class="field"><label for="lot-min-fee">每只 ETF 最低费用 元</label><input id="lot-min-fee" type="number" min="0" max="10000" step="1" value="0"></div></div>
+          <p id="lot-error" role="alert" hidden></p><div class="table-wrap" id="lot-table"></div><div class="stats" id="lot-summary"></div>
+          <p class="data-note">每只 ETF 的买入金额和费用共同占用该资产预算；不足一手的金额留作现金。费用为可修改的研究假设，并非券商报价。结果用于解释资金折合，不是调仓订单；未把整数份额、费用取整和成交限制补算进历史回测。历史收盘价不代表当前可成交价格。</p>
+        </div>
+        <details class="details"><summary>查看最近调仓记录 <span>＋</span></summary><div class="table-wrap"><table><thead id="trades-head"></thead><tbody id="trades-body"></tbody></table></div><p class="data-note">交易成本为模型假设，调仓权重为研究记录。</p></details>
+      </section>
+      <section id="sensitivity" class="section">
+        <div class="section-heading"><div><span class="section-kicker">04 / ROBUSTNESS</span><h2>参数与交易成本</h2></div><span class="subtle">固定样本与执行规则</span></div>
+        <p class="section-intro">观察不同风险预算与成本假设的结果，判断结论是否依赖某个特别有利的参数。以下是预先计算的历史实验。</p>
+        <div class="sensitivity-layout"><div><h3>损失预算敏感性</h3><div id="sensitivity-table" class="table-wrap"></div></div><div><h3>交易成本敏感性</h3><div id="cost-table" class="table-wrap"></div></div></div>
+        <p class="data-note">风险预算越低不必然带来更好的收益。费用改变后模型会重新优化配置，因此结果可能不单调，不能解释为相同订单简单扣除不同费用。参数比较不用于在测试集里事后挑选最优策略。</p>
+      </section>
+      <section id="evidence" class="section evidence-section">
+        <div class="section-heading"><div><span class="section-kicker">05 / REPRODUCIBLE EVIDENCE</span><h2>模型与证据</h2></div></div>
+        <div class="method-grid"><div><span class="method-number">01</span><h3>保留第一版机制实验</h3><p>PE / VC 基金规模同比用于构造模拟情景。规模增长受募资和退出影响，不能作为基金投资收益的直接证据。流动性冲击参数属于假设。</p></div><div><span class="method-number">02</span><h3>真实 ETF 应用迁移</h3><p>使用沪深300、中证500和创业板 ETF 的公开历史行情，以滚动历史窗口求解 RDEU 配置，并允许持有现金满足风险预算。</p></div><div><span class="method-number">03</span><h3>独立评估真实损益</h3><p>历史数据生成信号，下一交易日执行。用相同样本区间比较模型与基准，保留持仓漂移、成本和风险预测突破记录。</p></div></div>
+        <details class="details" open><summary>模型参数与执行假设 <span>＋</span></summary><dl id="parameters" class="parameters"></dl></details>
+        <details class="details"><summary>第一版复现与修正 <span>＋</span></summary><div id="original-audit"></div></details>
+        <details class="details"><summary>数据来源与使用边界 <span>＋</span></summary><div id="sources"></div><ul id="warnings" class="warning-list"></ul></details>
+      </section>
+      <footer><span class="brand-mark small">R<span>∕</span>V</span><p>VaR 约束在 PE / VC 中的应用<br><span>机制仿真与 A 股 ETF 应用验证 · 大创结项增强版</span></p><p>研究演示<br><span>历史回测 · 非投资建议</span></p></footer>
+    </div>
+  </main>
+  <script src="data.js?v=2d3cbbf6ea63"></script><script src="lot-calculator.js?v=59ce55cd6762"></script><script src="enhancement.js?v=d583e540e239"></script><script src="app.js?v=ac6e9358ffaf"></script>
+</body></html>
